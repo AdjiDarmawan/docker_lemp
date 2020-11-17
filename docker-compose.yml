@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.17
+    container_name: webserver
+    env_file:
+      - .env
+    ports:
+      # - ${SERVER_PORT}:80
+      - 8082:80
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d:ro
+      - ./nginx/logs/error.log:/var/log/nginx/error.log
+      - ./nginx/logs/access.log:/var/log/nginx/access.log
+      - ./uploaded:/var/www/secops:ro
+    # links:
+    depends_on:
+      - php
+
+  php:
+    build: ./php-fpm/
+    container_name: php
+    #image: php:7.4-fpm
+    working_dir: /var/www/secops
+    volumes:
+      - ./uploaded:/var/www/secops
+#     depends_on:
+#       - database
+#
+#   database:
+#     image: mysql:8
+#     environment:
+#       - MYSQL_ROOT_PASSWORD: root
+#       - MYSQL_DATABASE: demo
+#       - PMA_HOST: mysql
+#       # - MYSQL_USER=${DB_USER}
+#       # - MYSQL_PASSWORD=${DB_PASSWORD}
+#     volumes:
+#       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+#       - ./database/data_mysql:/var/lib/mysql
+#
+# volumes:
+#   data_mysql:
+
+# References:
+# https://github.com/atillay/docker-lemp/blob/master/docker-compose.yml
